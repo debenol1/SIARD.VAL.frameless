@@ -6,6 +6,7 @@ import org.jdom.Element;
 
 public class Table {
 	
+	private String name;
 	private List<Element> columns;
 	private List<Element> columnsReference;
 	
@@ -21,6 +22,12 @@ public class Table {
 	}
 	public void setColumnsReference(List<Element> columnsReference) {
 		this.columnsReference = columnsReference;
+	}
+	public String getName() {
+		return name;
+	}
+	public void setName(String name) {
+		this.name = name;
 	}
 
 }

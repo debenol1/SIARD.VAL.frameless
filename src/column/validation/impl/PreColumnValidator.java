@@ -83,7 +83,9 @@ public class PreColumnValidator implements PreValidator {
 				
 			//Load <table> Elements
 			for (Element tableElement : tableElements) {
-					
+				
+				
+				
 				//Load XML Elements
 				StringBuffer tableFolder = new StringBuffer();
 					
@@ -110,7 +112,8 @@ public class PreColumnValidator implements PreValidator {
 				List<Element> xsdElements = loadXMLElements(xpath, xsdPrefix, namespaceURI, columnSchema);
 					
 				Table table = new Table();
-					
+				
+				table.setName(tableElement.getChild("folder", xmlNamespace).getValue());
 				table.setColumns(columns);
 				table.setColumnsReference(xsdElements);
 				

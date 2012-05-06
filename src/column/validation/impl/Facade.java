@@ -8,6 +8,7 @@ import column.validation.api.ValidationPlugin;
 import column.validation.api.Validator;
 import column.validation.impl.context.ValidationContext;
 import column.validation.impl.plugin.AttributeCountValidator;
+import column.validation.impl.plugin.AttributeOccurenceValidator;
 
 public class Facade {
 
@@ -20,8 +21,12 @@ public class Facade {
 		PreValidator preValidator = new PreColumnValidator();
 				
 		List<ValidationPlugin> plugins = new ArrayList<ValidationPlugin>();
+		
 		ValidationPlugin attributeCountValidator = new AttributeCountValidator();
+		ValidationPlugin attributeOccurenceValidator = new AttributeOccurenceValidator();
+		
 		plugins.add(attributeCountValidator);
+		plugins.add(attributeOccurenceValidator);
 		
 		preValidator.loadValidationContext(path);
 		preValidator.loadValidationSource();
