@@ -9,6 +9,7 @@ import column.validation.api.Validator;
 import column.validation.impl.context.ValidationContext;
 import column.validation.impl.plugin.AttributeCountValidator;
 import column.validation.impl.plugin.AttributeOccurenceValidator;
+import column.validation.impl.plugin.AttributeTypeValidator;
 
 public class Facade {
 
@@ -24,9 +25,11 @@ public class Facade {
 		
 		ValidationPlugin attributeCountValidator = new AttributeCountValidator();
 		ValidationPlugin attributeOccurenceValidator = new AttributeOccurenceValidator();
+		ValidationPlugin attributeTypeValidator = new AttributeTypeValidator();
 		
 		plugins.add(attributeCountValidator);
 		plugins.add(attributeOccurenceValidator);
+		plugins.add(attributeTypeValidator);
 		
 		preValidator.loadValidationContext(path);
 		preValidator.loadValidationSource();
@@ -36,7 +39,7 @@ public class Facade {
 		
 		Validator validator = new ColumnValidator(validationContext);
 		validator.validate();
-		validator.printReport();
+		//validator.printReport();
 		
 	}
 
