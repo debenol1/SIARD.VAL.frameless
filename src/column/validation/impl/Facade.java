@@ -39,7 +39,7 @@ public class Facade {
 		
 		Validator validator = new ColumnValidator(validationContext);
 		validator.validate();
-		//validator.printReport();
+		validator.printReport();
 		
 	}
 

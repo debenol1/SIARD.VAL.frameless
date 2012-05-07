@@ -54,17 +54,27 @@ public class AttributeTypeValidator implements ValidationPlugin {
 				
 				String elementName = xmlElement.getChild("name", context.getXmlNamespace()).getValue();
 				
+				
+				String delimiter = properties.getProperty("attribute.type.validator.original.type.delimiter");
+				
+				String trimmedExpectedType = trimLeftSideType(leftSide, delimiter);
+				String expectedType = properties.getProperty(trimmedExpectedType);
+				
 				validationReport.append(elementName);
 				validationReport.append(": ");
 				validationReport.append(" ");
 				validationReport.append(leftSide);
 				validationReport.append(", ");
-				validationReport.append(" ");
+				validationReport.append(properties.getProperty("attribute.type.validator.expected.type"));
+				validationReport.append(": ");
+				validationReport.append(expectedType);
+				validationReport.append(", ");
+				validationReport.append(properties.getProperty("attribute.type.validator.defined.type"));
+				validationReport.append(": ");
 				validationReport.append(rightSide);
+				validationReport.append(". ");
 				
-				if (leftSide.equalsIgnoreCase("true") && rightSide.equalsIgnoreCase("0")) {
-					validationReport.append(properties.getProperty("attribute.type.validator.passed"));
-				} else if (leftSide.equalsIgnoreCase("false") && rightSide == null) {
+				if (expectedType.equalsIgnoreCase(rightSide)) {
 					validationReport.append(properties.getProperty("attribute.type.validator.passed"));
 				} else {
 					this.setPassed(false);
@@ -75,12 +85,36 @@ public class AttributeTypeValidator implements ValidationPlugin {
 			}
 			
 		}
-		//this.setReport(validationReport);
-		System.out.println(validationReport.toString());
+		
+		if (getPassed() == true) {
+			validationReport.append('\n');
+			validationReport.append(properties.getProperty("attribute.type.validator.test.passed"));
+			validationReport.append('\n');
+	    } else {
+	    	validationReport.append('\n');
+			validationReport.append(properties.getProperty("attribute.type.validator.test.failed"));
+			validationReport.append('\n');
+		}
+		
+		validationReport.append(properties.getProperty("attribute.type.validator.end"));
+		validationReport.append('\n');
+		
+		this.setReport(validationReport);
 		
 		
 	}
-
+	
+	private String trimLeftSideType(String leftside, String delimiter) {
+		int i = leftside.indexOf(delimiter);
+		if (i > -1) {
+			String trimmedLeftSideType = leftside.substring(0, i);
+			return trimmedLeftSideType;
+		} else {
+			return leftside;
+		}
+	}
+	
+	
 	@Override
 	public void loadValidationContext(ValidationContext validationContext) {
 		setValidationContext(validationContext);
@@ -96,8 +130,7 @@ public class AttributeTypeValidator implements ValidationPlugin {
 
 	@Override
 	public StringBuffer getReport() {
-		// TODO Auto-generated method stub
-		return null;
+		return this.report;
 	}
 
 	public void setReport(StringBuffer report) {
