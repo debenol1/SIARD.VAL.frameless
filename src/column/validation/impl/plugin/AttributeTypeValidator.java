@@ -27,7 +27,7 @@ public class AttributeTypeValidator implements ValidationPlugin {
 		StringBuffer validationReport = new StringBuffer();
 		Properties properties = context.getValidationProperties();
 		
-		validationReport.append(properties.getProperty("attribute.occurrence.validator.title"));
+		validationReport.append(properties.getProperty("attribute.type.validator.title"));
 		validationReport.append('\n');
 		validationReport.append('\n');
 		
@@ -39,51 +39,54 @@ public class AttributeTypeValidator implements ValidationPlugin {
 			List<Element> xmlElements = table.getColumns();
 			List<Element> xsdElements = table.getColumnsReference();
 			
-			int i = 0;
+			if (xmlElements.size() == xsdElements.size()) {
 			
-			while ( i < xmlElements.size()) {
+				int i = 0;
+			
+				while ( i < xmlElements.size()) {
 				
-				Element xmlElement = xmlElements.get(i);
-				Element xsdElement = xsdElements.get(i);
+					Element xmlElement = xmlElements.get(i);
+					Element xsdElement = xsdElements.get(i);
 				
-				//Check the nullable Element
-				String leftSide = xmlElement.getChild("type", context.getXmlNamespace()).getValue();
+					//Check the nullable Element
+					String leftSide = xmlElement.getChild("type", context.getXmlNamespace()).getValue();
 				
-				//Check the minOccurs Attribute
-				String rightSide = xsdElement.getAttributeValue("type");
+					//Check the minOccurs Attribute
+					String rightSide = xsdElement.getAttributeValue("type");
 				
-				String elementName = xmlElement.getChild("name", context.getXmlNamespace()).getValue();
+					String elementName = xmlElement.getChild("name", context.getXmlNamespace()).getValue();
 				
+					String delimiter = properties.getProperty("attribute.type.validator.original.type.delimiter");
 				
-				String delimiter = properties.getProperty("attribute.type.validator.original.type.delimiter");
+					String trimmedExpectedType = trimLeftSideType(leftSide, delimiter);
+					String expectedType = properties.getProperty(trimmedExpectedType);
 				
-				String trimmedExpectedType = trimLeftSideType(leftSide, delimiter);
-				String expectedType = properties.getProperty(trimmedExpectedType);
+					validationReport.append(elementName);
+					validationReport.append(": ");
+					validationReport.append(" ");
+					validationReport.append(leftSide);
+					validationReport.append(", ");
+					validationReport.append(properties.getProperty("attribute.type.validator.expected.type"));
+					validationReport.append(": ");
+					validationReport.append(expectedType);
+					validationReport.append(", ");
+					validationReport.append(properties.getProperty("attribute.type.validator.defined.type"));
+					validationReport.append(": ");
+					validationReport.append(rightSide);
+					validationReport.append(". ");
 				
-				validationReport.append(elementName);
-				validationReport.append(": ");
-				validationReport.append(" ");
-				validationReport.append(leftSide);
-				validationReport.append(", ");
-				validationReport.append(properties.getProperty("attribute.type.validator.expected.type"));
-				validationReport.append(": ");
-				validationReport.append(expectedType);
-				validationReport.append(", ");
-				validationReport.append(properties.getProperty("attribute.type.validator.defined.type"));
-				validationReport.append(": ");
-				validationReport.append(rightSide);
-				validationReport.append(". ");
-				
-				if (expectedType.equalsIgnoreCase(rightSide)) {
-					validationReport.append(properties.getProperty("attribute.type.validator.passed"));
-				} else {
-					this.setPassed(false);
-					validationReport.append(properties.getProperty("attribute.type.validator.failed"));
+					if (expectedType.equalsIgnoreCase(rightSide)) {
+						validationReport.append(properties.getProperty("attribute.type.validator.passed"));
+					} else {
+						this.setPassed(false);
+						validationReport.append(properties.getProperty("attribute.type.validator.failed"));
+					}
+					i = i + 1;
+					validationReport.append('\n');
 				}
-				i = i + 1;
-				validationReport.append('\n');
+			} else {
+				this.setPassed(false);
 			}
-			
 		}
 		
 		if (getPassed() == true) {

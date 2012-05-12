@@ -39,39 +39,52 @@ public class AttributeOccurenceValidator implements ValidationPlugin {
 			List<Element> xmlElements = table.getColumns();
 			List<Element> xsdElements = table.getColumnsReference();
 			
-			int i = 0;
+			if (xmlElements.size() == xsdElements.size()) {
+			
+				int i = 0;
 						
-			while ( i < xmlElements.size()) {
+				while ( i < xmlElements.size()) {
 				
-				Element xmlElement = xmlElements.get(i);
-				Element xsdElement = xsdElements.get(i);
+					Element xmlElement = xmlElements.get(i);
+					Element xsdElement = xsdElements.get(i);
 				
-				//Check the nullable Element
-				String leftSide = xmlElement.getChild("nullable", context.getXmlNamespace()).getValue();
+					//Check the nullable Element
+					String leftSide = xmlElement.getChild("nullable", context.getXmlNamespace()).getValue();
 				
-				//Check the minOccurs Attribute
-				String rightSide = xsdElement.getAttributeValue("minOccurs");
+					//Check the minOccurs Attribute
+					String rightSide = xsdElement.getAttributeValue("minOccurs");
 				
-				String elementName = xmlElement.getChild("name", context.getXmlNamespace()).getValue();
+					String elementName = xmlElement.getChild("name", context.getXmlNamespace()).getValue();
 				
-				validationReport.append(elementName);
-				validationReport.append(": ");
-				validationReport.append(properties.getProperty("attribute.occurrence.validator.nullable"));
-				validationReport.append(leftSide);
-				validationReport.append(", ");
-				validationReport.append(properties.getProperty("attribute.occurrence.validator.min.occurs"));
-				validationReport.append(rightSide);
+					validationReport.append(elementName);
+					validationReport.append(": ");
+					validationReport.append(properties.getProperty("attribute.occurrence.validator.nullable"));
+					validationReport.append(leftSide);
+					validationReport.append(", ");
+					validationReport.append(properties.getProperty("attribute.occurrence.validator.min.occurs"));
+					validationReport.append(rightSide);
 				
-				if (leftSide.equalsIgnoreCase("true") && rightSide.equalsIgnoreCase("0")) {
-					validationReport.append(properties.getProperty("attribute.occurrence.validator.passed"));
-				} else if (leftSide.equalsIgnoreCase("false") && rightSide == null) {
-					validationReport.append(properties.getProperty("attribute.occurrence.validator.passed"));
-				} else {
-					this.setPassed(false);
-					validationReport.append(properties.getProperty("attribute.occurrence.validator.failed"));
+					try {
+						if (leftSide.equalsIgnoreCase("true") && rightSide == null) {
+							this.setPassed(false);
+							validationReport.append(properties.getProperty("attribute.occurrence.validator.failed"));
+						} else if (leftSide.equalsIgnoreCase("true") && rightSide.equalsIgnoreCase("0")) {
+							validationReport.append(properties.getProperty("attribute.occurrence.validator.passed"));
+						} else if (leftSide.equalsIgnoreCase("false") && rightSide == null) {
+							validationReport.append(properties.getProperty("attribute.occurrence.validator.passed"));
+						} else {
+							this.setPassed(false);
+							validationReport.append(properties.getProperty("attribute.occurrence.validator.failed"));
+						}
+						validationReport.append('\n');
+					} catch (Exception e) {
+						e.printStackTrace();
+					} finally {
+						i = i + 1;
+					}
 				}
-				i = i + 1;
-				validationReport.append('\n');
+			} else {
+				this.setPassed(false);
 			}
 		}
 		
@@ -85,7 +98,7 @@ public class AttributeOccurenceValidator implements ValidationPlugin {
 			validationReport.append('\n');
 		}
 		
-		validationReport.append(properties.getProperty("attribute.count.validator.end"));
+		validationReport.append(properties.getProperty("attribute.occurrence.validator.end"));
 		validationReport.append('\n');
 		
 		this.setReport(validationReport);
